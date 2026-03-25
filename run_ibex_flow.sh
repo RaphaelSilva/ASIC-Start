@@ -17,9 +17,14 @@ set -e
 PROJECT_DIR="$HOME/eda_workspace"
 OPENLANE_DIR="$PROJECT_DIR/OpenLane"
 IBEX_REPO_DIR="$PROJECT_DIR/ibex"
-DESIGN_NAME="ibex_core"
+DESIGN_NAME="ibex_top"
 DESIGN_DIR="$OPENLANE_DIR/designs/$DESIGN_NAME"
 SRC_DIR="$DESIGN_DIR/src"
+
+# OpenLane configuration
+CLOCK_PERIOD=20.0
+FP_CORE_UTIL=40
+PL_TARGET_DENSITY=0.45
 
 # Tag de run com timestamp (previsível e fácil de encontrar)
 RUN_TAG="ibex_$(date +%Y%m%d_%H%M%S)"
@@ -58,6 +63,9 @@ SV_FILES=(
     "$IBEX_REPO_DIR/vendor/lowrisc_ip/ip/prim/rtl/prim_cipher_pkg.sv"
     "$IBEX_REPO_DIR/vendor/lowrisc_ip/ip/prim/rtl/prim_count_pkg.sv"
     "$IBEX_REPO_DIR/vendor/lowrisc_ip/ip/prim/rtl/prim_secded_pkg.sv"
+    "$IBEX_REPO_DIR/vendor/lowrisc_ip/ip/prim/rtl/prim_util_pkg.sv"
+    "$IBEX_REPO_DIR/vendor/lowrisc_ip/ip/prim/rtl/prim_mubi_pkg.sv"
+    "$IBEX_REPO_DIR/vendor/lowrisc_ip/ip/prim_generic/rtl/prim_pkg.sv"
     "$IBEX_REPO_DIR/vendor/lowrisc_ip/ip/prim_generic/rtl/prim_ram_1p_pkg.sv"
     "$IBEX_REPO_DIR/rtl/ibex_pkg.sv"
     "$IBEX_REPO_DIR/vendor/lowrisc_ip/ip/prim/rtl/prim_count.sv"
@@ -68,9 +76,10 @@ SV_FILES=(
     "$IBEX_REPO_DIR/vendor/lowrisc_ip/ip/prim_generic/rtl/prim_buf.sv"
     "$IBEX_REPO_DIR/vendor/lowrisc_ip/ip/prim_generic/rtl/prim_clock_mux2.sv"
     "$IBEX_REPO_DIR/vendor/lowrisc_ip/ip/prim_generic/rtl/prim_flop.sv"
-    "$IBEX_REPO_DIR/vendor/lowrisc_ip/ip/prim_generic/rtl/prim_generic_clock_gating.sv"
+    "$IBEX_REPO_DIR/vendor/lowrisc_ip/ip/prim_generic/rtl/prim_clock_gating.sv"
     "$IBEX_REPO_DIR/rtl/ibex_top.sv"
     "$IBEX_REPO_DIR/rtl/ibex_core.sv"
+    "$IBEX_REPO_DIR/rtl/ibex_counter.sv"
     "$IBEX_REPO_DIR/rtl/ibex_alu.sv"
     "$IBEX_REPO_DIR/rtl/ibex_branch_predict.sv"
     "$IBEX_REPO_DIR/rtl/ibex_compressed_decoder.sv"
@@ -89,17 +98,23 @@ SV_FILES=(
     "$IBEX_REPO_DIR/rtl/ibex_pmp.sv"
     "$IBEX_REPO_DIR/rtl/ibex_wb_stage.sv"
     "$IBEX_REPO_DIR/rtl/ibex_dummy_instr.sv"
+    "$IBEX_REPO_DIR/rtl/ibex_icache.sv"
+    "$IBEX_REPO_DIR/rtl/ibex_register_file_ff.sv"
+    "$IBEX_REPO_DIR/rtl/ibex_register_file_fpga.sv"
     "$IBEX_REPO_DIR/rtl/ibex_register_file_latch.sv"
     "$IBEX_REPO_DIR/rtl/ibex_lockstep.sv"
 )
 
 # Common dependencies that should be passed to every sv2v call
 PKGS=(
-    "$IBEX_REPO_DIR/rtl/ibex_pkg.sv"
+    "$IBEX_REPO_DIR/vendor/lowrisc_ip/ip/prim/rtl/prim_util_pkg.sv"
+    "$IBEX_REPO_DIR/vendor/lowrisc_ip/ip/prim/rtl/prim_mubi_pkg.sv"
+    "$IBEX_REPO_DIR/vendor/lowrisc_ip/ip/prim_generic/rtl/prim_pkg.sv"
     "$IBEX_REPO_DIR/vendor/lowrisc_ip/ip/prim/rtl/prim_cipher_pkg.sv"
     "$IBEX_REPO_DIR/vendor/lowrisc_ip/ip/prim/rtl/prim_count_pkg.sv"
     "$IBEX_REPO_DIR/vendor/lowrisc_ip/ip/prim/rtl/prim_secded_pkg.sv"
     "$IBEX_REPO_DIR/vendor/lowrisc_ip/ip/prim_generic/rtl/prim_ram_1p_pkg.sv"
+    "$IBEX_REPO_DIR/rtl/ibex_pkg.sv"
 )
 
 V_FILES=()
@@ -146,7 +161,7 @@ V_FILES_STR=$(printf '"%s", ' "${V_FILES[@]}" | sed 's/, $//')
 
 cat <<EOF > "$DESIGN_DIR/config.json"
 {
-    "DESIGN_NAME": "ibex_core",
+    "DESIGN_NAME": "$DESIGN_NAME",
     "VERILOG_FILES": [
         $V_FILES_STR
     ],
@@ -223,7 +238,6 @@ print(f'    CLOCK_PORT:     {cfg[\"CLOCK_PORT\"]}')
 print(f'    CLOCK_PERIOD:   {cfg[\"CLOCK_PERIOD\"]} ns ({1000/cfg[\"CLOCK_PERIOD\"]:.1f} MHz)')
 print(f'    FP_CORE_UTIL:   {cfg[\"FP_CORE_UTIL\"]}%')
 print(f'    PL_TARGET_DENS: {cfg[\"PL_TARGET_DENSITY\"]}')
-print(f'    RUN_SV2V:       {cfg[\"RUN_SV2V\"]}')
 print(f'    Nº de arquivos: {len(cfg[\"VERILOG_FILES\"])}')
 "
 echo ""

@@ -1,0 +1,17 @@
+[options]
+mode prove
+depth 20
+
+[engines]
+smtbmc
+
+[script]
+read -sv top.sv
+read -sv counter_sva.sv
+read -v counter.v
+prep -top counter2b
+
+[files]
+dut/top.sv
+dut/counter_sva.sv
+rtl/counter.v

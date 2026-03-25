@@ -1,0 +1,40 @@
+rm -f results.xml
+"make" -f Makefile results.xml
+make[1]: Entering directory '/root/ASIC-Start/dut'
+/root/ASIC-Start/venv/lib/python3.13/site-packages/cocotb_tools/makefiles/simulators/Makefile.icarus:66: Using MODULE is deprecated, please use COCOTB_TEST_MODULES instead.
+rm -f results.xml
+COCOTB_TEST_MODULES=test_counter2b COCOTB_TESTCASE= COCOTB_TEST_FILTER= COCOTB_TOPLEVEL=counter2b TOPLEVEL_LANG=verilog \
+         /usr/bin/vvp -M /root/ASIC-Start/venv/lib/python3.13/site-packages/cocotb/libs -m libcocotbvpi_icarus   sim_build/sim.vvp   
+     -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:93   in _embed_init_python              Using Python 3.13.0rc1 interpreter at /root/ASIC-Start/venv/bin/python3
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:79   in gpi_print_registered_impl       VPI registered
+     0.00ns INFO     cocotb                             Running on Icarus Verilog version 12.0 (stable)
+     0.00ns INFO     cocotb                             Seeding Python random module with 1774013572
+     0.00ns INFO     cocotb                             Initialized cocotb v2.0.1 from /root/ASIC-Start/venv/lib/python3.13/site-packages/cocotb
+     0.00ns INFO     cocotb                             Running tests
+     0.00ns INFO     cocotb.regression                  running test_counter2b.test_counter_reset (1/4)
+                                                            Test directed reset.
+     1.00ns INFO     cocotb.counter2b                   Reset test passed
+     1.00ns INFO     cocotb.regression                  test_counter2b.test_counter_reset passed
+     1.00ns INFO     cocotb.regression                  running test_counter2b.test_counter_set (2/4)
+                                                            Test set functionality.
+    12.00ns INFO     cocotb.counter2b                   Set test passed
+    12.00ns INFO     cocotb.regression                  test_counter2b.test_counter_set passed
+    12.00ns INFO     cocotb.regression                  running test_counter2b.test_counter_increment (3/4)
+                                                            Test counter increment (cen is active low).
+    63.00ns INFO     cocotb.counter2b                   Increment test passed
+    63.00ns INFO     cocotb.regression                  test_counter2b.test_counter_increment passed
+    63.00ns INFO     cocotb.regression                  running test_counter2b.test_counter_hold (4/4)
+                                                            Test counter hold (cen is active low).
+    94.00ns INFO     cocotb.counter2b                   Hold test passed
+    94.00ns INFO     cocotb.regression                  test_counter2b.test_counter_hold passed
+    94.00ns INFO     cocotb.regression                  ***********************************************************************************************
+                                                        ** TEST                                   STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        ***********************************************************************************************
+                                                        ** test_counter2b.test_counter_reset       PASS           1.00           0.00       2168.72  **
+                                                        ** test_counter2b.test_counter_set         PASS          11.00           0.00      38193.17  **
+                                                        ** test_counter2b.test_counter_increment   PASS          51.00           0.00      83363.02  **
+                                                        ** test_counter2b.test_counter_hold        PASS          31.00           0.00      71717.28  **
+                                                        ***********************************************************************************************
+                                                        ** TESTS=4 PASS=4 FAIL=0 SKIP=0                          94.00           0.00      26579.29  **
+                                                        ***********************************************************************************************
+make[1]: Leaving directory '/root/ASIC-Start/dut'
